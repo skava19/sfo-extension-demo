@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright ©2002-2018 Skava - All rights reserved.
+  All information contained herein is, and remains the property of Skava.
+  Skava including, without limitation, all software and other elements thereof,
+  are owned or controlled exclusively by Skava and protected by copyright, patent
+  and other laws. Use without permission is prohibited.
+  Unauthorized copying of this file, via any medium is strictly prohibited
+
+  For further information contact Skava at info@skava.com.
+  
+ This code is provided solely for use in articulating the Skava Commerce API 
+ and system and is not warrented to be fit for any purpose 
+  
+-->
+<rest tag="Orders" path="/ordersWithETA" xmlns="http://camel.apache.org/schema/spring">
+    <description>OMS Orchestration API's for store front operation. </description>
+    <get uri="/{id}"
+         outType="com.skava.partner.enablement.model.OrderOmsExtended" produces="application/json">
+        <description>Load an Order</description>
+        <param dataType="string" description="{{swagger.constant.oms.id.description}}" name="id"
+               required="true" type="path"/>
+        <param dataType="string" description="{{swagger.constant.x-sk-session-id.description}}"
+               name="x-sk-session-id" required="true" type="header"/>
+        <param dataType="string" description="{{swagger.constant.x-store-id.description}}"
+               name="x-store-id" required="true" type="header"/>
+        <param dataType="string" description="{{swagger.constant.x-version.description}}"
+               name="x-version" required="false" type="header" defaultValue="{{skava.app.version}}"/>
+        <param dataType="string" description="{{swagger.constant.locale.description}}"
+               name="locale" required="false" type="header"/>
+        <responseMessage code="200" message="OK"
+                         responseModel="com.skava.oms.orchestration.model.OrderOms"/>
+        <responseMessage message="Bad Request" code="400"
+                         responseModel="com.skava.orchestration.model.error.ErrorResponseModel"/>
+        <responseMessage code="401" message="Unauthorized"
+                         responseModel="com.skava.orchestration.model.error.ErrorResponseModel"/>
+        <responseMessage code="403" message="Forbidden"
+                         responseModel="com.skava.orchestration.model.error.ErrorResponseModel"/>
+        <responseMessage code="404" message="Not Found"
+                         responseModel="com.skava.orchestration.model.error.ErrorResponseModel"/>
+        <security key="{{skava.auth.key}}"/>
+        <route id="getOrderByIdEta">
+            <to uri="direct:routeGetOrderByIdETA"/>
+        </route>
+    </get>  
+</rest>

@@ -1,0 +1,178 @@
+cache:
+  dev:
+    enable: true
+camel:
+  messagehistory:
+    enabled: true
+  trace:
+    enabled: false
+  zipkin:
+    include-message-body-streams: true
+org:
+  apache:
+    camel:
+      jmx:
+        disabled: true
+server:
+  port: 8090
+  ssl:
+   enabled: true
+   key-alias: tomcat
+   key-password: Skava@123
+   key-flore: /Users/dwl/git/ecommorchestration/keystore.p12
+   key-store: classpath:keystore.p12
+   key-store-type: PKCS12
+   key-store-password: Skava@123
+skava:
+  cartOrchestrationProperties:
+    unpaidAmountThrushhold: 1
+  component:
+    http: http4://dummy/?throwExceptionOnFailure=false
+    rabbitmq:
+      defaultExchange: camel.exchange
+      embedded: true
+      enabled: true
+      host: localhost
+      password: guest
+      port: 5673
+      username: guest
+      vhost: nameAlias
+  event:
+    deleteCustomerQueue: orchestration.deleteCustomerQueue
+    ecommTopic: ecomm
+    orchestration:
+      notification:
+        queueEndPoint: rabbitmq://${skava.component.rabbitmq.defaultExchange}?routingKey=${skava.event.orchestration.notification.queueName}&queue=${skava.event.orchestration.notification.queueName}&autoDelete=false&durable=true&skipExchangeDeclare=true&threadPoolSize=1&autoAck=false&automaticRecoveryEnabled=true&concurrentConsumers=5
+        queueName: orchestration.notification
+        routingKeys: user.*.#,order.*.#
+    sendNotificationQueueEndPoint: rabbitmq://${skava.component.rabbitmq.defaultExchange}?routingKey=notificationQueue&queue=notificationQueue&skipExchangeDeclare=true&skipQueueDeclare=false&exchangePattern=InOnly&bridgeEndpoint=true&durable=true&autoDelete=false
+  services:
+    accounts:
+      contextPath: accountservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    address:
+      contextPath: addressservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    auth:
+      contextPath: authservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    cart:
+      contextPath: cartservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    catalog:
+      contextPath: catalogservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    foundation:
+      contextPath: foundationservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    inventory:
+      contextPath: inventoryservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    list:
+      contextPath: listservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    merchandise:
+      contextPath: merchandiseservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    oms:
+      contextPath: omsservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    payment:
+      contextPath: paymentservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    price:
+      contextPath: priceservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    promotion:
+      contextPath: promotionservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    search:
+      contextPath: searchservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    shipping:
+      contextPath: shippingservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    subscription:
+      contextPath: subscription
+      ip: https://euat.skavaone.com
+      port: ''
+      serviceName: ''
+      version: ''
+    tax:
+      contextPath: taxservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+    user:
+      contextPath: userservices
+      ip: https://woolworthsapi.skavacommerce.com
+      port: ''
+      serviceName: ''
+      version: ''
+spring:
+  application:
+    name: orchestration
+  cloud:
+    zookeeper:
+      config:
+        enabled: false
+      enabled: false
+  profiles:
+    active: dev
+  jmx:
+    enabled: false
+  sleuth:
+    sampler:
+      probability: 1
+  zipkin:
+    base-url: http://localhost:9411/
+swagger:
+  server:
+    domain: localhost
+    port: 8090

@@ -1,0 +1,109 @@
+
+<routes xmlns="http://camel.apache.org/schema/spring">
+ <!--
+  Copyright ©2002-2018 Skava - All rights reserved.
+  All information contained herein is, and remains the property of Skava.
+  Skava including, without limitation, all software and other elements thereof,
+  are owned or controlled exclusively by Skava and protected by copyright, patent
+  and other laws. Use without permission is prohibited.
+  Unauthorized copying of this file, via any medium is strictly prohibited
+
+  For further information contact Skava at info@skava.com.
+  
+ This code is provided solely for use in articulating the Skava Commerce API 
+ and system and is not warrented to be fit for any purpose 
+  
+-->   
+            
+     <!--  this is a dupe of the basic get orders route, with some tweaks -->
+     
+     <route id="routeGetOrderByIdETA">
+        <from uri="direct:routeGetOrderByIdETA"/>
+         <log message="route get order by Id ETA entry" loggingLevel="INFO"/>
+        <when>
+            <simple>${in.headers.id} == null or ${in.headers.id} == '' </simple>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>400</constant>
+            </setHeader>
+            <to uri="bean:commonErrorHandler?method=convertToErrorModel(EO0011, 'Invalid Order Id')"/>
+            <marshal ref="serializer"/>
+            <stop/>
+        </when>
+        <setProperty propertyName="orderId">
+            <simple>${in.headers.id}</simple>
+        </setProperty>
+        <to uri="direct:getStore"/>
+        <to uri="direct:ValidateSessionIdAndGetAuthToken"/>
+        <setHeader headerName="id">
+            <simple>${exchangeProperty.orderId}</simple>
+        </setHeader>
+        <to uri="direct:omsGetorder"/>
+         <setProperty propertyName = "OmsOrderStash">
+            <simple>${body}</simple>
+       </setProperty>
+       <to uri="direct:GetLocation"/>
+        <setBody>
+            <simple>${exchangeProperty.OmsOrderStash}</simple>
+        </setBody> 
+        
+        <process ref="convertToGetOrderByIdResponseProcessor"/>
+        <setProperty propertyName="omsOrderResponse">
+            <simple>${body}</simple>
+        </setProperty>
+        <process ref="getPaymentIdByOmsOrderProcessor"/>
+        <when>
+            <simple>${in.headers.id} != 0</simple>
+            <setProperty propertyName="paymentOverrideErrorResponse">
+                <simple>true</simple>
+            </setProperty>
+            <setProperty propertyName="getCartPaymentProperty">
+                <simple>false</simple>
+            </setProperty>
+            <to uri="direct:getPaymentSuccessResponse"/>
+        </when>
+        <setBody>
+            <simple>${exchangeProperty.omsOrderResponse}</simple>
+        </setBody>
+        <setHeader headerName="CamelHttpResponseCode">
+            <constant>200</constant>
+        </setHeader>
+        <process ref="InsertLocationIntoOrder"/>
+    </route>  
+        
+       <route id="routeGetLocation">
+       <from uri="direct:GetLocation"/>   
+      <setHeader headerName="Exchange.HTTP_PATH">
+            <simple></simple>
+        </setHeader>
+        <setBody><simple/></setBody>  
+        <setHeader headerName="Exchange.HTTP_METHOD">
+            <constant>GET</constant>
+        </setHeader>
+        <setHeader headerName="CamelHttpQuery">
+        <simple>orderId=id:${exchangeProperty.orderId}</simple>
+        </setHeader>
+        <setHeader headerName="Exchange.HTTP_URI">
+            <simple>http://localhost:8080/DeliveryVanLocation?throwExceptionOnFailure=false</simple>     
+        </setHeader>   
+        <setHeader headerName="CamelHttpUri">
+           <simple>http://localhost:8080/DeliveryVanLocation?throwExceptionOnFailure=false</simple>
+        </setHeader>     
+        <to uri="http4://localhost:8080/DeliveryVanLocation?throwExceptionOnFailure=false"/>   
+        <choice>
+            <when>
+                <simple>${in.headers.CamelHttpResponseCode} == 200 or ${in.headers.CamelHttpResponseCode} == 201</simple>
+                <log message="Location response ${in.headers.CamelHttpResponseCode} - $simple{routeId} - $simple{threadName}" loggingLevel="INFO"/>
+                <setProperty propertyName="locationResponse">
+                <simple>${bodyAs(String)}</simple>
+               </setProperty>
+             </when>
+             <otherwise>
+             <log message="Post method call, response is ${in.headers.CamelHttpResponseCode}" loggingLevel="INFO"/>
+             <setProperty propertyName="locationResponse">
+             <constant>No response from location service. But your products are on the way!</constant>
+               </setProperty>
+             </otherwise>
+         </choice>  
+      </route>
+        
+ </routes>
