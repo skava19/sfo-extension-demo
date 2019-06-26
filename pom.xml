@@ -70,10 +70,11 @@
 		</dependency>
 
 		<!-- Orchestration libs -->
+		<!-- This is a dependency on the enablement artifactory private build of the orchestration library   -->
 		<dependency>
-			<groupId>com.skava.orchestration</groupId>
-			<artifactId>orchestration</artifactId>
-			<version>8.2.0-SNAPSHOT</version>
-		</dependency>
+          <groupId>com.skava.orchestration</groupId>
+          <artifactId>orchestration</artifactId>
+          <version>8.2.0-ENABLEMENT</version>
+        </dependency>
 	</dependencies>
 </project>
